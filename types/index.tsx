@@ -1,4 +1,4 @@
-export type ItemSearch = {
+export interface ItemSearch {
     title: string,
     link: string,
     content: string,
