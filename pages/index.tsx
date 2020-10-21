@@ -1,14 +1,32 @@
 import React, { FunctionComponent, useState, useCallback } from 'react'
 import Layout from '../components/Layout'
 import _ from "lodash"
-import { ItemSearch } from '../types'
 
+interface ItemSearch {
+  author: string,
+  author_id: string,
+  date_taken: string,
+  description: string,
+  link: string,
+  media: {
+    m?: string
+  },
+  published: string,
+  tags: string,
+  title: string
+}
+
+interface FlickrResponse {
+  description?: string,
+  generator?: string,
+  items: Array<ItemSearch>
+}
 
 const Index: FunctionComponent = () => {
   const [userQuery, setUserQuery] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
-  const [items, setItems] = useState<[ItemSearch] | null>(null)
+  const [items, setItems] = useState<Array<ItemSearch> | null>(null)
 
   function sendQuery(url: string) {
     setLoading(true)
@@ -16,7 +34,10 @@ const Index: FunctionComponent = () => {
 
     fetch(url)
       .then(res => res.json())
-      .then(json => setItems(json.items))
+      .then((json: FlickrResponse) => {
+        console.log(json)
+        setItems(json.items)
+      })
       .catch(e => setError(e.toString()))
       .finally(() => {
         setLoading(false)
@@ -43,8 +64,10 @@ const Index: FunctionComponent = () => {
       {error && <div className="error">{error}</div>}
       {items && items.map((item: ItemSearch) => (
         <div key={item.link}>
-          <h4>{item.title}</h4>
-          <div>{item.contentSnippet}</div>
+          <h3>{item.title}</h3>
+          <h4>{item.author}</h4>
+          <p>{item.tags}</p>
+          <div><img src={item.media.m}/></div>
         </div>
       ))}
     </Layout>

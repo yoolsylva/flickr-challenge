@@ -1,17 +1,19 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import Parser, { Output } from 'rss-parser';
+import axios from 'axios';
 
-let parser = new Parser();
+function jsonFlickrFeed(json: Object) {
+  return json;
+}
 
 export default async (req: any, res: any) => {
   try {
-    const feed: Output = await parser.parseURL(`https://www.flickr.com/services/feeds/photos_public.gne?format=rss_092&tag=${req.query.tag}`)
+    const response = await axios(`https://www.flickr.com/services/feeds/photos_public.gne?format=json&tag=${req.query.tag}`);
+    const resJson: Object = eval(response.data);
 
-    res.statusCode = 200
-    res.setHeader('Content-Type', 'application/json')
-    res.json(feed)
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(resJson);
   } catch (e) {
-    res.statusCode = 500
-    res.json({error: true, message: e.message})
+    res.statusCode = 500;
+    res.json({error: true, message: e.message});
   }
 }
